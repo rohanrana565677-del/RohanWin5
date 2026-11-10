@@ -1,1336 +1,294 @@
 <!DOCTYPE html>
-<html lang="hi" class="dark">
+<html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RohanWin5 - Trending Gaming Hub</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            gold: '#f59e0b',
-                            purple: '#8b5cf6',
-                            dark: '#07090e',
-                            card: '#131c2e'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-    <!-- QR Code Generator Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #07090e;
-            color: #f1f5f9;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #07090e;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1e293b;
-            border-radius: 2px;
-        }
-        .glass-panel {
-            background: rgba(19, 28, 46, 0.85);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-        }
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); }
-            50% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.6); }
-        }
-        .glow-card {
-            animation: pulseGlow 3s infinite;
-        }
-        .mine-btn {
-            transition: all 0.2s ease;
-        }
-        .mine-btn:active {
-            transform: scale(0.92);
-        }
-        @keyframes cardFlip {
-            0% { transform: rotateY(0deg); }
-            100% { transform: rotateY(180deg); }
-        }
-        .animate-flip {
-            animation: cardFlip 0.5s ease forward;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RohanWin - 10s Timer & High Multiplier Aviator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #0b0e14;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+    .game-card {
+      background: #151c28;
+      border: 1px solid #2a364f;
+      border-radius: 16px;
+      padding: 20px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+      text-align: center;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #2a364f;
+    }
+    .header h2 {
+      font-size: 18px;
+      color: #38bdf8;
+    }
+    .round-info {
+      font-size: 12px;
+      color: #94a3b8;
+      background: #0f172a;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .timer-banner {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+      padding: 8px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      background: #090d16;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #2a364f;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .multiplier-overlay {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 42px;
+      font-weight: 800;
+      color: #38bdf8;
+      text-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
+    }
+    .multiplier-overlay.crashed {
+      color: #ef4444;
+      text-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+    }
+    .status-text {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 13px;
+      color: #94a3b8;
+      letter-spacing: 0.5px;
+    }
+    .history-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin-top: 15px;
+      padding-bottom: 5px;
+    }
+    .history-badge {
+      background: #1e293b;
+      color: #38bdf8;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .history-badge.high {
+      color: #a855f7;
+      border: 1px solid #a855f7;
+    }
+  </style>
 </head>
-<body class="pb-24 min-h-screen flex flex-col">
+<body>
 
-    <!-- AUTHENTICATION OVERLAY (Shown only on first-time visit) -->
-    <div id="auth-modal" class="fixed inset-0 z-[60] bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="glass-panel max-w-sm w-full p-6 rounded-2xl border border-amber-500/40 text-center space-y-4 shadow-2xl relative">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 flex items-center justify-center font-black text-2xl text-white shadow-lg mx-auto">
-                R
-            </div>
-            <div>
-                <h2 id="auth-title" class="text-xl font-black text-white">RohanWin5 Login</h2>
-                <p id="auth-subtitle" class="text-xs text-slate-400 mt-1">Enter your mobile number & password to start playing</p>
-            </div>
-
-            <!-- LOGIN FORM -->
-            <form id="form-login" onsubmit="handleLogin(event)" class="space-y-3 text-left">
-                <div>
-                    <label class="block text-[10px] text-slate-400 font-bold mb-1">Mobile Number</label>
-                    <input type="tel" id="login-mobile" placeholder="10-digit mobile number" maxlength="10" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-xs focus:border-amber-400 outline-none">
-                </div>
-                <div>
-                    <label class="block text-[10px] text-slate-400 font-bold mb-1">Password</label>
-                    <input type="password" id="login-password" placeholder="Enter password" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-xs focus:border-amber-400 outline-none">
-                </div>
-                <div class="flex justify-between items-center text-[11px]">
-                    <span onclick="showAuthTab('forgot')" class="text-amber-400 hover:underline cursor-pointer">Forgot Password?</span>
-                    <span onclick="showAuthTab('signup')" class="text-emerald-400 font-bold hover:underline cursor-pointer">Register New Account</span>
-                </div>
-                <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-rose-600 hover:from-amber-400 hover:to-rose-500 text-slate-950 font-black text-xs py-2.5 rounded-xl shadow-lg transition">
-                    LOGIN & PLAY
-                </button>
-            </form>
-
-            <!-- SIGNUP FORM (WITH OTP) -->
-            <form id="form-signup" onsubmit="handleSignup(event)" class="space-y-3 text-left hidden">
-                <div>
-                    <label class="block text-[10px] text-slate-400 font-bold mb-1">Mobile Number</label>
-                    <div class="flex space-x-2">
-                        <input type="tel" id="signup-mobile" placeholder="10-digit number" maxlength="10" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-xs focus:border-amber-400 outline-none">
-                        <button type="button" onclick="sendOtp('signup')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-[10px] font-black px-2.5 py-1 rounded-lg shrink-0">Send OTP</button>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-[10px] text-slate-400 font-bold mb-1">OTP Code</label>
-                    <input type="text" id="signup-otp" placeholder="Enter 4-digit OTP" maxlength="4" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-amber-300 font-mono font-bold text-xs focus:border-amber-400 outline-none">
-                </div>
-                <div>
-                    <label class="block text-[10px] text-slate-400 font-bold mb-1">Set Password</label>
-                    <input type="password" id="signup-password" placeholder="Create strong password" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-xs focus:border-amber-400 outline-none">
-                </div>
-                <div class="text-[11px]">
-                    <span onclick="showAuthTab('login')" class="text-amber-400 font-bold hover:underline cursor-pointer">Already have an account? Login</span>
-                </div>
-                <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-black text-xs py-2.5 rounded-xl shadow-lg transition">
-                    VERIFY OTP & REGISTER
-                </button>
-            </form>
-
-            <!-- FORGOT PASSWORD FORM -->
-            <form id="form-forgot" onsubmit="handleForgot(event)" class="space-y-3 text-left hidden">
-                <div>
-                    <label class="block text-[10px] text-slate-400 font-bold mb-1">Registered Mobile Number</label>
-                    <div class="flex space-x-2">
-                        <input type="tel" id="forgot-mobile" placeholder="10-digit number" maxlength="10" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-xs focus:border-amber-400 outline-none">
-                        <button type="button" onclick="sendOtp('forgot')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-[10px] font-black px-2.5 py-1 rounded-lg shrink-0">Send OTP</button>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-[10px] text-slate-400 font-bold mb-1">OTP Code</label>
-                    <input type="text" id="forgot-otp" placeholder="Enter OTP" maxlength="4" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-amber-300 font-mono font-bold text-xs focus:border-amber-400 outline-none">
-                </div>
-                <div>
-                    <label class="block text-[10px] text-slate-400 font-bold mb-1">New Password</label>
-                    <input type="password" id="forgot-password" placeholder="Enter new password" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-xs focus:border-amber-400 outline-none">
-                </div>
-                <div class="text-[11px]">
-                    <span onclick="showAuthTab('login')" class="text-amber-400 font-bold hover:underline cursor-pointer">Back to Login</span>
-                </div>
-                <button type="submit" class="w-full bg-gradient-to-r from-purple-500 to-rose-600 hover:from-purple-400 hover:to-rose-500 text-white font-black text-xs py-2.5 rounded-xl shadow-lg transition">
-                    RESET PASSWORD
-                </button>
-            </form>
-
-            <div id="auth-msg" class="text-xs font-bold text-amber-400 min-h-[16px]"></div>
-        </div>
+  <div class="game-card">
+    <div class="header">
+      <h2>🚀 Aviator 20x</h2>
+      <div class="round-info" id="roundId">राउंड #1001</div>
     </div>
 
-    <!-- Top Navigation Header -->
-    <header class="sticky top-0 z-50 glass-panel px-4 py-3 shadow-xl">
-        <div class="max-w-md mx-auto flex items-center justify-between">
-            <!-- Brand Logo -->
-            <div class="flex items-center space-x-2">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 flex items-center justify-center font-black text-lg text-white shadow-lg shadow-amber-500/30">
-                    R
-                </div>
-                <div>
-                    <span class="text-lg font-black tracking-wider bg-gradient-to-r from-amber-400 via-rose-300 to-purple-400 bg-clip-text text-transparent">
-                        RohanWin5
-                    </span>
-                    <span class="block text-[9px] text-emerald-400 font-semibold tracking-widest uppercase">Live Gaming Arena</span>
-                </div>
-            </div>
+    <div class="timer-banner" id="timerBanner">अगला राउंड: 10s</div>
 
-            <!-- Withdraw Counter, Deposit & Profile -->
-            <div class="flex items-center space-x-2">
-                <!-- Balance Counter / Withdraw Link -->
-                <div onclick="switchTab('withdraw')" class="flex items-center bg-slate-950/90 border border-amber-500/40 rounded-full px-2.5 py-1 shadow-inner cursor-pointer hover:border-amber-400 transition">
-                    <i class="fa-solid fa-indian-rupee-sign text-amber-400 mr-1 text-xs"></i>
-                    <span id="wallet-balance" class="font-black text-amber-300 text-xs">10.00</span>
-                </div>
-
-                <!-- Deposit Button -->
-                <button onclick="switchTab('deposit')" class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-black text-[11px] px-2.5 py-1.5 rounded-full shadow-lg shadow-emerald-500/30 transition transform active:scale-95">
-                    <i class="fa-solid fa-plus-circle mr-0.5"></i> Deposit
-                </button>
-
-                <!-- Profile Button -->
-                <button onclick="switchTab('profile')" class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-amber-500 p-0.5 shadow-md flex items-center justify-center shrink-0">
-                    <div class="w-full h-full bg-slate-950 rounded-full flex items-center justify-center text-purple-300 text-xs">
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Live Winner Ticker -->
-    <div class="max-w-md mx-auto w-full px-4 mt-2">
-        <div class="bg-slate-900/90 border border-slate-800 rounded-lg px-3 py-1.5 flex items-center text-xs text-slate-300 overflow-hidden shadow">
-            <span class="bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded font-bold mr-2 shrink-0 flex items-center text-[10px]">
-                <i class="fa-solid fa-fire mr-1 text-amber-400"></i> TRENDING
-            </span>
-            <div class="overflow-hidden whitespace-nowrap w-full">
-                <div id="live-ticker" class="inline-block animate-marquee space-x-6 text-[11px] text-slate-400">
-                    <span>Rahul_99 won <strong class="text-emerald-400">₹4,500</strong> on Aviator!</span>
-                    <span>Aman_X won <strong class="text-amber-400">₹12,800</strong> on Mines 5x5!</span>
-                    <span>Vikash_K won <strong class="text-emerald-400">₹6,400</strong> on Dragon vs Tiger!</span>
-                    <span>Deepak_7 won <strong class="text-purple-400">₹2,100</strong> on Win Go 30s!</span>
-                </div>
-            </div>
-        </div>
+    <div class="canvas-container">
+      <canvas id="aviatorCanvas" width="360" height="220"></canvas>
+      <div class="multiplier-overlay" id="multiplierText">1.00x</div>
+      <div class="status-text" id="statusText">वेटिंग टाइमर चल रहा है...</div>
     </div>
 
-    <!-- Main Content Area -->
-    <main class="max-w-md mx-auto w-full px-4 mt-3 flex-grow">
-
-        <!-- TAB 1: HOME & TRENDING GAMES GRID -->
-        <section id="tab-home" class="tab-block space-y-4">
-            
-            <!-- Promo Banner -->
-            <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-rose-950 via-purple-950 to-slate-900 p-5 border border-rose-500/30 shadow-2xl">
-                <div class="relative z-10">
-                    <span class="bg-amber-500/20 text-amber-300 text-[10px] px-2.5 py-1 rounded-full border border-amber-500/30 font-bold uppercase tracking-wider">₹10 Welcome Bonus</span>
-                    <h1 class="text-xl font-black mt-2 text-white">Trending Casino Games!</h1>
-                    <p class="text-slate-300 text-xs mt-1">Play Mines, Aviator, Win Go, Dragon vs Tiger & Limbo. Grow your balance up to ₹500 with boosted payouts!</p>
-                    <button onclick="openGame('mines')" class="mt-3.5 bg-gradient-to-r from-amber-500 to-rose-600 hover:from-amber-400 hover:to-rose-500 text-slate-950 font-black px-4 py-2 rounded-xl text-xs shadow-lg shadow-rose-500/30 transition transform active:scale-95">
-                        Play Mines Now <i class="fa-solid fa-bomb ml-1"></i>
-                    </button>
-                </div>
-                <i class="fa-solid fa-crown text-6xl text-amber-500/20 absolute right-3 bottom-2 -rotate-12 pointer-events-none"></i>
-            </div>
-
-            <!-- Games Selection Header -->
-            <div class="flex items-center justify-between pt-1">
-                <h2 class="text-sm font-bold text-white flex items-center">
-                    <i class="fa-solid fa-fire text-rose-500 mr-2"></i> Trending Games (MaanWin Style)
-                </h2>
-                <span class="text-[10px] text-emerald-400 font-bold">5 Live Arenas</span>
-            </div>
-
-            <!-- Trending Games Grid -->
-            <div class="grid grid-cols-2 gap-3">
-                
-                <!-- Game 1: Aviator -->
-                <div onclick="openGame('aviator')" class="glass-panel hover:border-rose-500/60 rounded-2xl p-3.5 cursor-pointer transition transform hover:-translate-y-1 shadow-lg group relative overflow-hidden glow-card">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-amber-500 flex items-center justify-center text-white text-lg shadow-md mb-3">
-                        <i class="fa-solid fa-plane-up"></i>
-                    </div>
-                    <span class="bg-rose-500/20 text-rose-300 text-[9px] px-2 py-0.5 rounded-full font-bold">TOP #1 🔥</span>
-                    <h3 class="font-bold text-white text-sm mt-1 group-hover:text-amber-400 transition">Aviator Plane</h3>
-                    <p class="text-[11px] text-slate-400 mt-0.5">Real-time multiplier crash!</p>
-                </div>
-
-                <!-- Game 2: Mines -->
-                <div onclick="openGame('mines')" class="glass-panel hover:border-emerald-500/60 rounded-2xl p-3.5 cursor-pointer transition transform hover:-translate-y-1 shadow-lg group">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-lg shadow-md mb-3">
-                        <i class="fa-solid fa-bomb"></i>
-                    </div>
-                    <span class="bg-emerald-500/20 text-emerald-300 text-[9px] px-2 py-0.5 rounded-full font-bold">HOT 💣</span>
-                    <h3 class="font-bold text-white text-sm mt-1 group-hover:text-amber-400 transition">Mines 5x5</h3>
-                    <p class="text-[11px] text-slate-400 mt-0.5">Uncover gems & dodge bombs!</p>
-                </div>
-
-                <!-- Game 3: Win Go 30s -->
-                <div onclick="openGame('wingo')" class="glass-panel hover:border-purple-500/60 rounded-2xl p-3.5 cursor-pointer transition transform hover:-translate-y-1 shadow-lg group">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-rose-500 flex items-center justify-center text-white text-lg shadow-md mb-3">
-                        <i class="fa-solid fa-stopwatch"></i>
-                    </div>
-                    <span class="bg-purple-500/20 text-purple-300 text-[9px] px-2 py-0.5 rounded-full font-bold">30s Period</span>
-                    <h3 class="font-bold text-white text-sm mt-1 group-hover:text-amber-400 transition">Win Go Color</h3>
-                    <p class="text-[11px] text-slate-400 mt-0.5">Color & 0-9 number prediction!</p>
-                </div>
-
-                <!-- Game 4: Dragon vs Tiger -->
-                <div onclick="openGame('dvt')" class="glass-panel hover:border-amber-500/60 rounded-2xl p-3.5 cursor-pointer transition transform hover:-translate-y-1 shadow-lg group">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-rose-600 flex items-center justify-center text-white text-lg shadow-md mb-3">
-                        <i class="fa-solid fa-dragon"></i>
-                    </div>
-                    <span class="bg-amber-500/20 text-amber-300 text-[9px] px-2 py-0.5 rounded-full font-bold">Card Clash</span>
-                    <h3 class="font-bold text-white text-sm mt-1 group-hover:text-amber-400 transition">Dragon vs Tiger</h3>
-                    <p class="text-[11px] text-slate-400 mt-0.5">High card battle win 2x - 9x!</p>
-                </div>
-
-                <!-- Game 5: Limbo Rocket -->
-                <div onclick="openGame('limbo')" class="glass-panel hover:border-blue-500/60 rounded-2xl p-3.5 cursor-pointer transition transform hover:-translate-y-1 shadow-lg group col-span-2">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-lg shadow-md shrink-0">
-                            <i class="fa-solid fa-rocket"></i>
-                        </div>
-                        <div>
-                            <div class="flex items-center space-x-2">
-                                <h3 class="font-bold text-white text-sm group-hover:text-amber-400 transition">Limbo Rocket Target</h3>
-                                <span class="bg-blue-500/20 text-blue-300 text-[9px] px-2 py-0.5 rounded-full font-bold">Fast Multiply</span>
-                            </div>
-                            <p class="text-[11px] text-slate-400 mt-0.5">Set target multiplier (up to 100x) & launch rocket!</p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- GAME VIEW 1: AVIATOR PLANE -->
-        <section id="game-aviator" class="game-view hidden space-y-3">
-            <button onclick="closeGame()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg mb-1">
-                <i class="fa-solid fa-arrow-left mr-1"></i> Back to Games
-            </button>
-            <div class="glass-panel rounded-2xl p-4 border border-rose-500/40 relative overflow-hidden">
-                <div class="flex items-center justify-between pb-2 border-b border-slate-800">
-                    <h2 class="font-black text-sm text-white flex items-center">
-                        <i class="fa-solid fa-plane-up text-rose-500 mr-2"></i> Aviator Flight
-                    </h2>
-                    <span id="aviator-status" class="text-[10px] bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded font-bold">Waiting for takeoff...</span>
-                </div>
-
-                <!-- Flight Display Screen -->
-                <div class="relative h-48 my-3 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 rounded-xl border border-slate-800 flex flex-col items-center justify-center overflow-hidden shadow-inner">
-                    <div id="aviator-multiplier" class="text-4xl md:text-5xl font-black text-amber-400 font-mono tracking-wider">1.00x</div>
-                    <div id="aviator-plane-icon" class="text-rose-500 text-3xl mt-2 transition-transform duration-200">
-                        <i class="fa-solid fa-plane-up"></i>
-                    </div>
-                    <div id="aviator-msg-overlay" class="absolute inset-0 bg-slate-950/85 flex items-center justify-center text-xs font-bold text-rose-400 hidden">
-                        FLEW AWAY @ 1.42x
-                    </div>
-                </div>
-
-                <!-- Bet Controls -->
-                <div class="space-y-3 bg-slate-900/80 p-3 rounded-xl border border-slate-800">
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-slate-400">Bet Amount (₹):</span>
-                        <input type="number" id="aviator-bet-input" value="10" min="10" step="10" class="w-24 bg-slate-950 border border-slate-700 rounded px-2 py-1 text-right text-amber-300 font-bold text-xs">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button id="aviator-place-btn" onclick="placeAviatorBet()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs py-2.5 rounded-xl shadow transition">
-                            PLACE BET
-                        </button>
-                        <button id="aviator-cashout-btn" onclick="cashoutAviator()" disabled class="bg-emerald-600/50 text-slate-300 font-black text-xs py-2.5 rounded-xl shadow transition cursor-not-allowed">
-                            CASH OUT
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- GAME VIEW 2: MINES 5x5 GRID -->
-        <section id="game-mines" class="game-view hidden space-y-3">
-            <button onclick="closeGame()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg mb-1">
-                <i class="fa-solid fa-arrow-left mr-1"></i> Back to Games
-            </button>
-            <div class="glass-panel rounded-2xl p-4 border border-emerald-500/40 space-y-3">
-                <div class="flex items-center justify-between pb-2 border-b border-slate-800">
-                    <h2 class="font-black text-sm text-white flex items-center">
-                        <i class="fa-solid fa-bomb text-emerald-400 mr-2"></i> Mines 5x5 Grid
-                    </h2>
-                    <div class="text-right">
-                        <span class="text-[9px] text-slate-400 block">Current Multiplier</span>
-                        <span id="mines-mult" class="text-sm font-black text-amber-400 font-mono">1.00x</span>
-                    </div>
-                </div>
-
-                <!-- 5x5 Mines Grid -->
-                <div id="mines-grid" class="grid grid-cols-5 gap-2 p-2 bg-slate-950 rounded-xl border border-slate-800">
-                    <!-- 25 Cells generated dynamically -->
-                </div>
-
-                <!-- Mines Controls -->
-                <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 space-y-2.5">
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-slate-400">Mines Count:</span>
-                        <select id="mines-count-select" class="bg-slate-950 border border-slate-700 rounded px-2 py-1 text-amber-300 font-bold text-xs">
-                            <option value="3" selected>3 Mines</option>
-                            <option value="5">5 Mines</option>
-                            <option value="10">10 Mines</option>
-                        </select>
-                    </div>
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-slate-400">Bet Amount (₹):</span>
-                        <input type="number" id="mines-bet-input" value="10" min="10" step="10" class="w-24 bg-slate-950 border border-slate-700 rounded px-2 py-1 text-right text-amber-300 font-bold text-xs">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 pt-1">
-                        <button id="mines-start-btn" onclick="startMinesGame()" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-xs py-2.5 rounded-xl shadow">
-                            START GAME
-                        </button>
-                        <button id="mines-cashout-btn" onclick="cashoutMines()" disabled class="bg-amber-500/40 text-slate-400 font-black text-xs py-2.5 rounded-xl shadow cursor-not-allowed">
-                            CASH OUT
-                        </button>
-                    </div>
-                </div>
-                <div id="mines-msg" class="text-center text-xs font-bold text-amber-400 min-h-[16px]"></div>
-            </div>
-        </section>
-
-        <!-- GAME VIEW 3: WIN GO 30s COLOR & NUMBER -->
-        <section id="game-wingo" class="game-view hidden space-y-3">
-            <button onclick="closeGame()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg mb-1">
-                <i class="fa-solid fa-arrow-left mr-1"></i> Back to Games
-            </button>
-            <div class="glass-panel rounded-2xl p-4 border border-purple-500/40 space-y-3">
-                <div class="flex items-center justify-between pb-2 border-b border-slate-800">
-                    <div>
-                        <h2 class="font-black text-sm text-white">Win Go 30s Period</h2>
-                        <span id="wingo-period-id" class="text-[9px] text-slate-400 font-mono">Period: 20261110001</span>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-[9px] text-slate-400 block">Time Left</span>
-                        <span id="wingo-timer" class="text-base font-black text-amber-400 font-mono">00:25</span>
-                    </div>
-                </div>
-
-                <!-- Color Buttons -->
-                <div class="grid grid-cols-3 gap-2">
-                    <button onclick="pickWingoOption('Green', 'color')" id="wingo-btn-Green" class="wingo-btn py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow border-2 border-transparent">
-                        Green (2x)
-                    </button>
-                    <button onclick="pickWingoOption('Violet', 'color')" id="wingo-btn-Violet" class="wingo-btn py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow border-2 border-transparent">
-                        Violet (4.5x)
-                    </button>
-                    <button onclick="pickWingoOption('Red', 'color')" id="wingo-btn-Red" class="wingo-btn py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow border-2 border-transparent">
-                        Red (2x)
-                    </button>
-                </div>
-
-                <!-- Number Buttons (0-9) -->
-                <div>
-                    <span class="text-[10px] text-slate-400 font-bold block mb-1">Guess Number (Win 9x):</span>
-                    <div class="grid grid-cols-5 gap-1.5">
-                        <button onclick="pickWingoOption('0', 'num')" class="wingo-num-btn bg-slate-900 border border-slate-800 text-amber-400 font-mono font-bold text-xs py-2 rounded-lg">0</button>
-                        <button onclick="pickWingoOption('1', 'num')" class="wingo-num-btn bg-slate-900 border border-slate-800 text-amber-400 font-mono font-bold text-xs py-2 rounded-lg">1</button>
-                        <button onclick="pickWingoOption('2', 'num')" class="wingo-num-btn bg-slate-900 border border-slate-800 text-amber-400 font-mono font-bold text-xs py-2 rounded-lg">2</button>
-                        <button onclick="pickWingoOption('3', 'num')" class="wingo-num-btn bg-slate-900 border border-slate-800 text-amber-400 font-mono font-bold text-xs py-2 rounded-lg">3</button>
-                        <button onclick="pickWingoOption('4', 'num')" class="wingo-num-btn bg-slate-900 border border-slate-800 text-amber-400 font-mono font-bold text-xs py-2 rounded-lg">4</button>
-                        <button onclick="pickWingoOption('5', 'num')" class="wingo-num-btn bg-slate-900 border border-slate-800 text-amber-400 font-mono font-bold text-xs py-2 rounded-lg">5</button>
-                        <button onclick="pickWingoOption('6', 'num')" class="wingo-num-btn bg-slate-900 border border-slate-800 text-amber-400 font-mono font-bold text-xs py-2 rounded-lg">6</button>
-                        <button onclick="pickWingoOption('7', 'num')" class="wingo-num-btn bg-slate-900 border border-slate-800 text-amber-400 font-mono font-bold text-xs py-2 rounded-lg">7</button>
-                        <button onclick="pickWingoOption('8', 'num')" class="wingo-num-btn bg-slate-900 border border-slate-800 text-amber-400 font-mono font-bold text-xs py-2 rounded-lg">8</button>
-                        <button onclick="pickWingoOption('9', 'num')" class="wingo-num-btn bg-slate-900 border border-slate-800 text-amber-400 font-mono font-bold text-xs py-2 rounded-lg">9</button>
-                    </div>
-                </div>
-
-                <!-- Bet Input & Status -->
-                <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 space-y-2">
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-slate-400">Bet Amount (₹):</span>
-                        <input type="number" id="wingo-bet-input" value="10" min="10" step="10" class="w-24 bg-slate-950 border border-slate-700 rounded px-2 py-1 text-right text-amber-300 font-bold text-xs">
-                    </div>
-                    <div id="wingo-status" class="text-center text-[11px] text-amber-400 font-semibold min-h-[16px]">Select option & wait for period end</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- GAME VIEW 4: DRAGON VS TIGER -->
-        <section id="game-dvt" class="game-view hidden space-y-3">
-            <button onclick="closeGame()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg mb-1">
-                <i class="fa-solid fa-arrow-left mr-1"></i> Back to Games
-            </button>
-            <div class="glass-panel rounded-2xl p-4 border border-amber-500/40 text-center space-y-3">
-                <h2 class="font-black text-sm text-white flex items-center justify-center">
-                    <i class="fa-solid fa-dragon text-amber-400 mr-2"></i> Dragon vs Tiger Card Clash
-                </h2>
-
-                <!-- Battle Field Cards -->
-                <div class="grid grid-cols-2 gap-4 my-2">
-                    <!-- Dragon Box -->
-                    <div class="bg-slate-950 p-3 rounded-xl border border-rose-500/50 space-y-2">
-                        <span class="text-xs font-black text-rose-400">DRAGON (2x)</span>
-                        <div id="dvt-card-dragon" class="w-16 h-24 mx-auto bg-gradient-to-br from-rose-900 to-slate-900 rounded-lg border-2 border-rose-500 flex items-center justify-center text-2xl text-white font-bold shadow-xl">
-                            🐉
-                        </div>
-                    </div>
-                    <!-- Tiger Box -->
-                    <div class="bg-slate-950 p-3 rounded-xl border border-amber-500/50 space-y-2">
-                        <span class="text-xs font-black text-amber-400">TIGER (2x)</span>
-                        <div id="dvt-card-tiger" class="w-16 h-24 mx-auto bg-gradient-to-br from-amber-900 to-slate-900 rounded-lg border-2 border-amber-500 flex items-center justify-center text-2xl text-white font-bold shadow-xl">
-                            🐯
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bet Placement -->
-                <div class="grid grid-cols-3 gap-2">
-                    <button onclick="pickDvt('DRAGON')" id="dvt-btn-DRAGON" class="dvt-opt-btn py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow border-2 border-transparent">
-                        Dragon (2x)
-                    </button>
-                    <button onclick="pickDvt('TIE')" id="dvt-btn-TIE" class="dvt-opt-btn py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow border-2 border-transparent">
-                        Tie (9x)
-                    </button>
-                    <button onclick="pickDvt('TIGER')" id="dvt-btn-TIGER" class="dvt-opt-btn py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs shadow border-2 border-transparent">
-                        Tiger (2x)
-                    </button>
-                </div>
-
-                <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 space-y-2 text-left">
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-slate-400">Bet Amount (₹):</span>
-                        <input type="number" id="dvt-bet-input" value="10" min="10" step="10" class="w-24 bg-slate-950 border border-slate-700 rounded px-2 py-1 text-right text-amber-300 font-bold text-xs">
-                    </div>
-                    <button onclick="playDvt()" class="w-full bg-gradient-to-r from-amber-500 to-rose-600 text-slate-950 font-black text-xs py-2.5 rounded-xl shadow">
-                        DEAL CARDS
-                    </button>
-                </div>
-                <div id="dvt-msg" class="text-xs text-amber-400 font-bold min-h-[16px]"></div>
-            </div>
-        </section>
-
-        <!-- GAME VIEW 5: LIMBO ROCKET -->
-        <section id="game-limbo" class="game-view hidden space-y-3">
-            <button onclick="closeGame()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg mb-1">
-                <i class="fa-solid fa-arrow-left mr-1"></i> Back to Games
-            </button>
-            <div class="glass-panel rounded-2xl p-4 border border-blue-500/40 text-center space-y-3">
-                <h2 class="font-black text-sm text-white flex items-center justify-center">
-                    <i class="fa-solid fa-rocket text-blue-400 mr-2"></i> Limbo Target Rocket
-                </h2>
-
-                <div class="h-36 bg-slate-950 rounded-xl border border-slate-800 flex flex-col items-center justify-center relative overflow-hidden">
-                    <div id="limbo-result-mult" class="text-4xl font-black text-amber-400 font-mono">1.00x</div>
-                    <div id="limbo-rocket-icon" class="text-blue-500 text-2xl mt-1">
-                        🚀
-                    </div>
-                </div>
-
-                <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 space-y-2.5 text-left">
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-slate-400">Target Multiplier (x):</span>
-                        <input type="number" id="limbo-target-input" value="2.00" min="1.01" max="100.00" step="0.1" class="w-24 bg-slate-950 border border-slate-700 rounded px-2 py-1 text-right text-amber-300 font-bold text-xs">
-                    </div>
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-slate-400">Bet Amount (₹):</span>
-                        <input type="number" id="limbo-bet-input" value="10" min="10" step="10" class="w-24 bg-slate-950 border border-slate-700 rounded px-2 py-1 text-right text-amber-300 font-bold text-xs">
-                    </div>
-                    <button onclick="playLimbo()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black text-xs py-2.5 rounded-xl shadow">
-                        LAUNCH ROCKET
-                    </button>
-                </div>
-                <div id="limbo-msg" class="text-xs text-amber-400 font-bold min-h-[16px]"></div>
-            </div>
-        </section>
-
-        <!-- TAB 2: DEPOSIT (PAYTM QR CODE & UPI ONLY - NO PHONE NUMBERS) -->
-        <section id="tab-deposit" class="tab-block hidden space-y-4 max-w-md mx-auto">
-            <div class="glass-panel rounded-2xl p-4 border border-emerald-500/30 text-center">
-                <h2 class="text-sm font-black text-white mb-1">Scan & Pay via Paytm / UPI</h2>
-                <p class="text-[11px] text-slate-400 mb-3">Scan QR Code or copy official UPI ID to deposit instantly.</p>
-
-                <!-- High-Resolution Paytm QR Code -->
-                <div class="bg-white p-3 rounded-2xl inline-block shadow-2xl mx-auto border-4 border-slate-900">
-                    <div id="qrcode-container" class="flex flex-col items-center justify-center p-1 bg-white rounded-lg">
-                        <!-- Generated via QRCode JS -->
-                    </div>
-                    <div class="text-[10px] font-black bg-blue-600 text-white px-2 py-0.5 rounded mt-2 uppercase tracking-wide">PAYTM / ALL UPI APPS</div>
-                </div>
-
-                <!-- Pure UPI ID Copy Box -->
-                <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800 mt-3 text-left space-y-2 text-xs">
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-400">Merchant Name:</span>
-                        <strong class="text-white font-semibold">Rohan Kumar Rav</strong>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-400">Paytm UPI ID:</span>
-                        <div class="flex items-center space-x-1.5">
-                            <span class="text-amber-400 font-mono font-bold">7068172057@ptsbi</span>
-                            <button onclick="copyText('7068172057@ptsbi', 'UPI ID')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-2 py-0.5 rounded text-[10px] border border-slate-700">Copy</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- UTR Input Form -->
-                <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 mt-3 space-y-2.5 text-left">
-                    <label class="block text-[11px] text-slate-300 font-bold">Enter 12-Digit UTR / Ref Number after payment:</label>
-                    <input type="text" id="utr-input" placeholder="e.g. 432190827361" maxlength="12" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white text-xs font-mono">
-                    <button onclick="verifyDepositUtr()" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950 font-black text-xs py-2.5 rounded-xl shadow">
-                        SUBMIT UTR & ADD FUNDS
-                    </button>
-                </div>
-                <div id="deposit-msg" class="text-xs mt-2 text-emerald-400 font-bold min-h-[16px]"></div>
-            </div>
-        </section>
-
-        <!-- TAB 3: WITHDRAWAL -->
-        <section id="tab-withdraw" class="tab-block hidden space-y-3">
-            <div class="glass-panel rounded-2xl p-4 border border-slate-800 space-y-4">
-                <h2 class="text-sm font-bold text-white mb-1 flex items-center">
-                    <i class="fa-solid fa-money-bill-transfer text-amber-400 mr-2"></i> Withdraw Funds
-                </h2>
-                <div class="bg-gradient-to-r from-slate-900 to-slate-950 p-4 rounded-xl border border-amber-500/20 flex items-center justify-between">
-                    <div>
-                        <span class="text-[10px] text-slate-400 block">Withdrawable Balance</span>
-                        <span id="wallet-main-display" class="text-2xl font-black text-amber-400 font-mono">₹10.00</span>
-                    </div>
-                    <span class="bg-rose-500/20 text-rose-300 text-[10px] px-2.5 py-1 rounded-full font-bold">VIP Locked</span>
-                </div>
-
-                <!-- Withdrawal Form -->
-                <div class="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 space-y-3 text-left">
-                    <div>
-                        <label class="block text-[10px] text-slate-400 font-bold mb-1">Enter Withdrawal Amount (₹)</label>
-                        <input type="number" id="withdraw-amt" placeholder="Minimum ₹100" min="100" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-amber-300 font-bold text-xs outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] text-slate-400 font-bold mb-1">Enter UPI ID / Bank A/C</label>
-                        <input type="text" id="withdraw-upi" placeholder="yourname@upi or Account No" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-bold text-xs outline-none">
-                    </div>
-                    <button onclick="triggerWithdrawal()" class="w-full bg-gradient-to-r from-amber-500 to-rose-600 hover:from-amber-400 hover:to-rose-500 text-slate-950 font-black text-xs py-2.5 rounded-xl shadow">
-                        REQUEST WITHDRAWAL
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 4: PROFILE & SECRET GIFT VAULT -->
-        <section id="tab-profile" class="tab-block hidden space-y-3 max-w-md mx-auto">
-            <div class="glass-panel rounded-2xl p-4 text-center border border-slate-800">
-                <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-amber-500 p-0.5 mx-auto mb-2 shadow-xl">
-                    <div class="w-full h-full bg-slate-950 rounded-full flex items-center justify-center text-2xl text-purple-300">
-                        <i class="fa-solid fa-user-ninja"></i>
-                    </div>
-                </div>
-                <h2 id="profile-user-name" class="text-sm font-bold text-white">Guest_User</h2>
-                <p id="profile-user-mobile" class="text-[10px] text-slate-400 mt-1">Mobile: ---------- | VIP: <span id="user-vip-badge" class="text-rose-400 font-bold">Free Tier</span></p>
-                <button onclick="logoutUser()" class="mt-3 text-[10px] bg-rose-500/20 text-rose-400 border border-rose-500/40 px-3 py-1 rounded-full font-bold hover:bg-rose-500 hover:text-white transition">
-                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout Account
-                </button>
-            </div>
-
-            <!-- SECRET GIFT BOX CARD -->
-            <div class="glass-panel rounded-2xl p-4 border border-amber-500/40 space-y-3">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-xs font-bold text-amber-400 flex items-center">
-                        <i class="fa-solid fa-box-open mr-2 animate-bounce"></i> Secret Gift Vault
-                    </h3>
-                    <span class="text-[9px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded font-semibold">Protected</span>
-                </div>
-                <p class="text-[11px] text-slate-400">Claim your ₹900 secret reward using confidential promo codes.</p>
-                
-                <button onclick="openGiftModal()" class="w-full bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 hover:opacity-90 text-slate-950 font-black text-xs py-2.5 rounded-xl shadow-lg flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-key"></i>
-                    <span>REDEEM GIFT CODE</span>
-                </button>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- MASKED GIFT CODE MODAL -->
-    <div id="gift-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="glass-panel max-w-xs w-full p-5 rounded-2xl border border-amber-500/50 text-center space-y-4 shadow-2xl relative">
-            <button onclick="closeGiftModal()" class="absolute top-3 right-3 text-slate-400 hover:text-white text-xs">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            <div class="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center text-xl mx-auto">
-                <i class="fa-solid fa-gift"></i>
-            </div>
-            <h3 class="text-sm font-black text-white">Enter Confidential Code</h3>
-            <p class="text-[11px] text-slate-300">
-                Input your promo code below. Characters remain masked for privacy.
-            </p>
-            
-            <div class="space-y-3 text-left">
-                <div class="relative">
-                    <input type="password" id="gift-code-input" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-amber-300 font-bold text-xs tracking-widest outline-none focus:border-amber-400">
-                    <button type="button" onclick="toggleGiftVisibility()" class="absolute right-3 top-2.5 text-slate-400 hover:text-amber-300 text-xs">
-                        <i id="gift-eye-icon" class="fa-solid fa-eye"></i>
-                    </button>
-                </div>
-                <button onclick="claimGiftCode()" class="w-full bg-gradient-to-r from-amber-500 to-rose-600 hover:from-amber-400 hover:to-rose-500 text-slate-950 font-black text-xs py-2.5 rounded-xl shadow">
-                    CLAIM BONUS (₹900)
-                </button>
-            </div>
-
-            <div id="gift-msg" class="text-xs text-center font-bold min-h-[16px]"></div>
-        </div>
+    <div class="history-bar" id="historyBar">
+      <span class="history-badge">1.45x</span>
+      <span class="history-badge high">8.20x</span>
+      <span class="history-badge high">18.50x</span>
+      <span class="history-badge">2.10x</span>
     </div>
+  </div>
 
-    <!-- VIP WITHDRAWAL MODAL LOCK -->
-    <div id="vip-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="glass-panel max-w-xs w-full p-5 rounded-2xl border border-rose-500/50 text-center space-y-3 shadow-2xl relative">
-            <button onclick="closeVipModal()" class="absolute top-3 right-3 text-slate-400 hover:text-white text-xs">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            <div class="w-12 h-12 bg-rose-500/20 text-rose-400 rounded-full flex items-center justify-center text-xl mx-auto">
-                <i class="fa-solid fa-lock"></i>
-            </div>
-            <h3 class="text-sm font-black text-white">VIP Level 1 Required</h3>
-            <p class="text-[11px] text-slate-300">
-                To withdraw earnings, you must unlock VIP status (₹100 to ₹10,000 deposit).
-            </p>
-            <button onclick="closeVipModal(); switchTab('deposit');" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-950 font-black text-xs py-2.5 rounded-xl shadow">
-                UNLOCK VIP STATUS NOW
-            </button>
-        </div>
-    </div>
+  <script>
+    const canvas = document.getElementById('aviatorCanvas');
+    const ctx = canvas.getContext('2d');
+    const multiplierText = document.getElementById('multiplierText');
+    const timerBanner = document.getElementById('timerBanner');
+    const statusText = document.getElementById('statusText');
+    const roundIdElem = document.getElementById('roundId');
+    const historyBar = document.getElementById('historyBar');
 
-    <!-- Bottom Navigation Bar (Withdraw Label & Profile) -->
-    <nav class="fixed bottom-0 left-0 right-0 z-50 glass-panel border-t border-slate-800 py-2 px-4">
-        <div class="max-w-md mx-auto flex justify-around items-center">
-            <button id="nav-home" onclick="switchTab('home')" class="nav-item flex flex-col items-center text-amber-400 font-bold text-[10px]">
-                <i class="fa-solid fa-gamepad text-base mb-0.5"></i>
-                <span>Games</span>
-            </button>
-            <button id="nav-deposit" onclick="switchTab('deposit')" class="nav-item flex flex-col items-center text-slate-400 font-bold text-[10px] hover:text-emerald-400">
-                <i class="fa-solid fa-qrcode text-base mb-0.5"></i>
-                <span>Deposit</span>
-            </button>
-            <button id="nav-withdraw" onclick="switchTab('withdraw')" class="nav-item flex flex-col items-center text-slate-400 font-bold text-[10px] hover:text-amber-400">
-                <i class="fa-solid fa-money-bill-transfer text-base mb-0.5"></i>
-                <span>Withdraw</span>
-            </button>
-            <button id="nav-profile" onclick="switchTab('profile')" class="nav-item flex flex-col items-center text-slate-400 font-bold text-[10px] hover:text-purple-400">
-                <i class="fa-solid fa-user text-base mb-0.5"></i>
-                <span>Profile</span>
-            </button>
-        </div>
-    </nav>
+    let roundNumber = 1001;
+    let waitTime = 10;
+    let isFlying = false;
+    let animationId;
+    let targetMultiplier = 1.00;
+    let currentMultiplier = 1.00;
+    let flightProgress = 0;
 
-    <!-- JavaScript Application Engine -->
-    <script>
-        // Global State
-        let userBalance = 10.00;
-        let activeGame = null;
-        let vipUnlocked = false;
-        let currentUser = null;
-        let generatedOtp = null;
+    // 20x तक रैंडम टारगेट जनरेट करना
+    function generateTargetMultiplier() {
+      const rand = Math.random();
+      if (rand < 0.4) {
+        return (1.1 + Math.random() * 1.9).toFixed(2); // 1.1x - 3.0x
+      } else if (rand < 0.75) {
+        return (3.0 + Math.random() * 5.0).toFixed(2); // 3.0x - 8.0x
+      } else if (rand < 0.92) {
+        return (8.0 + Math.random() * 7.0).toFixed(2); // 8.0x - 15.0x
+      } else {
+        return (15.0 + Math.random() * 10.0).toFixed(2); // 15.0x - 25.0x
+      }
+    }
 
-        // Aviator Variables
-        let aviatorInterval = null;
-        let aviatorMultiplier = 1.00;
-        let aviatorFlying = false;
-        let aviatorBetAmount = 0;
-        let aviatorCashedOut = false;
+    function drawScene(progress, crashed = false) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Mines Variables
-        let minesActive = false;
-        let minesLocations = [];
-        let revealedSafeCount = 0;
-        let minesBetAmount = 0;
-        let minesMultiplier = 1.00;
+      // 1. बैकग्राउंड ग्रिड
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < canvas.width; i += 40) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, canvas.height);
+        ctx.stroke();
+      }
 
-        // Win Go Variables
-        let wingoSelection = null;
-        let wingoType = null;
-        let wingoTimeLeft = 25;
-        let wingoInterval = null;
+      if (progress <= 0) return;
 
-        // Dragon vs Tiger
-        let dvtSelection = null;
+      // 2. कर्व लाइन (Trail)
+      const startX = 20;
+      const startY = canvas.height - 20;
+      const endX = 20 + (canvas.width - 50) * Math.min(progress, 1);
+      const endY = (canvas.height - 20) - (canvas.height - 50) * Math.pow(Math.min(progress, 1), 0.75);
 
-        window.onload = function() {
-            checkAuthSession();
-            updateBalanceUI();
-            generatePaytmQRCode();
-            setupMinesGridUI();
-            startWingoTimer();
-        };
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.quadraticCurveTo(startX + (endX - startX) / 2, startY, endX, endY);
+      ctx.strokeStyle = crashed ? '#ef4444' : '#ef4444';
+      ctx.lineWidth = 4;
+      ctx.stroke();
 
-        // Navigation Tabs
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-block').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.game-view').forEach(el => el.classList.add('hidden'));
-            const target = document.getElementById('tab-' + tabId);
-            if(target) target.classList.remove('hidden');
+      // 3. प्लेन डॉट / ऑब्जेक्ट
+      if (!crashed) {
+        ctx.beginPath();
+        ctx.arc(endX, endY, 7, 0, Math.PI * 2);
+        ctx.fillStyle = '#f87171';
+        ctx.shadowColor = '#ef4444';
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    }
 
-            document.querySelectorAll('.nav-item').forEach(el => el.className = "nav-item flex flex-col items-center text-slate-400 font-bold text-[10px]");
-            const activeNav = document.getElementById('nav-' + tabId);
-            if(activeNav) activeNav.className = "nav-item flex flex-col items-center text-amber-400 font-bold text-[10px]";
+    function startFlight() {
+      isFlying = true;
+      targetMultiplier = parseFloat(generateTargetMultiplier());
+      currentMultiplier = 1.00;
+      flightProgress = 0;
+
+      multiplierText.classList.remove('crashed');
+      timerBanner.innerText = "🚀 फ्लाइट चालू है...";
+      statusText.innerText = "टेक-ऑफ हो चुका है!";
+
+      function animate() {
+        if (currentMultiplier < targetMultiplier) {
+          // मल्टीप्लायर की स्पीड बढ़ाना
+          let speed = 0.01 + (currentMultiplier * 0.005);
+          currentMultiplier += speed;
+          flightProgress += 0.004;
+
+          multiplierText.innerText = currentMultiplier.toFixed(2) + 'x';
+          drawScene(flightProgress);
+
+          animationId = requestAnimationFrame(animate);
+        } else {
+          // क्रैश होना
+          multiplierText.innerText = targetMultiplier.toFixed(2) + 'x CRASH!';
+          multiplierText.classList.add('crashed');
+          statusText.innerText = "फ्लाइट क्रैश हो गई!";
+          drawScene(flightProgress, true);
+          
+          addHistoryBadge(targetMultiplier.toFixed(2) + 'x');
+          
+          // क्रैश होने के बाद 10s वेटिंग टाइमर दोबारा शुरू करना
+          setTimeout(() => {
+            startWaitingTimer();
+          }, 1500);
         }
+      }
 
-        function openGame(gameId) {
-            document.querySelectorAll('.tab-block').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.game-view').forEach(el => el.classList.add('hidden'));
-            const gameEl = document.getElementById('game-' + gameId);
-            if(gameEl) gameEl.classList.remove('hidden');
-            activeGame = gameId;
+      animate();
+    }
+
+    function startWaitingTimer() {
+      isFlying = false;
+      waitTime = 10;
+      roundNumber++;
+      roundIdElem.innerText = `राउंड #${roundNumber}`;
+      multiplierText.innerText = "1.00x";
+      multiplierText.classList.remove('crashed');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const interval = setInterval(() => {
+        timerBanner.innerText = `अगला राउंड: ${waitTime}s`;
+        statusText.innerText = "वेटिंग टाइमर चल रहा है...";
+        
+        if (waitTime <= 0) {
+          clearInterval(interval);
+          startFlight();
         }
+        waitTime--;
+      }, 1000);
+    }
+
+    function addHistoryBadge(val) {
+      const num = parseFloat(val);
+      const badge = document.createElement('span');
+      badge.className = `history-badge ${num >= 5 ? 'high' : ''}`;
+      badge.innerText = val;
+      historyBar.insertBefore(badge, historyBar.firstChild);
+      
+      if (historyBar.children.length > 6) {
+        historyBar.removeChild(historyBar.lastChild);
+      }
+    }
+
+    // पहला राउंड शुरू करें
+    startWaitingTimer();
+  </script>
 
-        function closeGame() {
-            if(aviatorFlying) cashoutAviator();
-            if(minesActive) cashoutMines();
-            switchTab('home');
-            activeGame = null;
-        }
-
-        // ==========================================
-        // AUTO-LOGIN & SINGLE SESSION MANAGEMENT
-        // ==========================================
-        function checkAuthSession() {
-            const savedSession = localStorage.getItem('rohanwin_session');
-            if (savedSession) {
-                currentUser = JSON.parse(savedSession);
-                document.getElementById('auth-modal').classList.add('hidden');
-                document.getElementById('profile-user-name').innerText = "User_" + currentUser.mobile.slice(-4);
-                document.getElementById('profile-user-mobile').innerText = `Mobile: ${currentUser.mobile} | VIP: Free Tier`;
-                if(currentUser.balance !== undefined) {
-                    userBalance = currentUser.balance;
-                }
-            } else {
-                document.getElementById('auth-modal').classList.remove('hidden');
-            }
-        }
-
-        function showAuthTab(tab) {
-            document.getElementById('form-login').classList.add('hidden');
-            document.getElementById('form-signup').classList.add('hidden');
-            document.getElementById('form-forgot').classList.add('hidden');
-            document.getElementById('auth-msg').innerText = '';
-
-            if(tab === 'login') {
-                document.getElementById('auth-title').innerText = "RohanWin5 Login";
-                document.getElementById('auth-subtitle').innerText = "Enter your mobile number & password to enter";
-                document.getElementById('form-login').classList.remove('hidden');
-            } else if(tab === 'signup') {
-                document.getElementById('auth-title').innerText = "Register Account";
-                document.getElementById('auth-subtitle').innerText = "Verify OTP & set password to claim ₹10 Bonus";
-                document.getElementById('form-signup').classList.remove('hidden');
-            } else if(tab === 'forgot') {
-                document.getElementById('auth-title').innerText = "Reset Password";
-                document.getElementById('auth-subtitle').innerText = "Verify Mobile OTP to choose a new password";
-                document.getElementById('form-forgot').classList.remove('hidden');
-            }
-        }
-
-        function sendOtp(type) {
-            const mobileInput = type === 'signup' ? document.getElementById('signup-mobile').value : document.getElementById('forgot-mobile').value;
-            if(!mobileInput || mobileInput.length !== 10) {
-                document.getElementById('auth-msg').innerText = "Please enter a valid 10-digit mobile number.";
-                return;
-            }
-            generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
-            document.getElementById('auth-msg').innerText = `OTP sent! Verification Code: ${generatedOtp}`;
-        }
-
-        function handleSignup(e) {
-            e.preventDefault();
-            const mobile = document.getElementById('signup-mobile').value.trim();
-            const otp = document.getElementById('signup-otp').value.trim();
-            const password = document.getElementById('signup-password').value;
-
-            if(otp !== generatedOtp) {
-                document.getElementById('auth-msg').innerText = "Invalid OTP code!";
-                return;
-            }
-
-            const users = JSON.parse(localStorage.getItem('rohanwin_users') || '{}');
-            if(users[mobile]) {
-                document.getElementById('auth-msg').innerText = "Mobile number registered! Please login.";
-                return;
-            }
-
-            users[mobile] = { mobile: mobile, password: password, balance: 10.00 };
-            localStorage.setItem('rohanwin_users', JSON.stringify(users));
-            
-            currentUser = users[mobile];
-            localStorage.setItem('rohanwin_session', JSON.stringify(currentUser));
-
-            document.getElementById('auth-msg').innerText = "Registration Successful!";
-            setTimeout(() => { checkAuthSession(); }, 600);
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const mobile = document.getElementById('login-mobile').value.trim();
-            const password = document.getElementById('login-password').value;
-
-            const users = JSON.parse(localStorage.getItem('rohanwin_users') || '{}');
-            if(!users[mobile] || users[mobile].password !== password) {
-                document.getElementById('auth-msg').innerText = "Incorrect Mobile Number or Password!";
-                return;
-            }
-
-            currentUser = users[mobile];
-            localStorage.setItem('rohanwin_session', JSON.stringify(currentUser));
-
-            document.getElementById('auth-msg').innerText = "Login Successful!";
-            setTimeout(() => { checkAuthSession(); }, 600);
-        }
-
-        function handleForgot(e) {
-            e.preventDefault();
-            const mobile = document.getElementById('forgot-mobile').value.trim();
-            const otp = document.getElementById('forgot-otp').value.trim();
-            const newPassword = document.getElementById('forgot-password').value;
-
-            if(otp !== generatedOtp) {
-                document.getElementById('auth-msg').innerText = "Invalid OTP code!";
-                return;
-            }
-
-            const users = JSON.parse(localStorage.getItem('rohanwin_users') || '{}');
-            if(!users[mobile]) {
-                document.getElementById('auth-msg').innerText = "Account not found for this mobile number.";
-                return;
-            }
-
-            users[mobile].password = newPassword;
-            localStorage.setItem('rohanwin_users', JSON.stringify(users));
-
-            document.getElementById('auth-msg').innerText = "Password updated! Please login.";
-            setTimeout(() => { showAuthTab('login'); }, 1000);
-        }
-
-        function logoutUser() {
-            localStorage.removeItem('rohanwin_session');
-            currentUser = null;
-            document.getElementById('auth-modal').classList.remove('hidden');
-            showAuthTab('login');
-        }
-
-        function saveCurrentBalanceState() {
-            if (currentUser) {
-                currentUser.balance = userBalance;
-                localStorage.setItem('rohanwin_session', JSON.stringify(currentUser));
-                const users = JSON.parse(localStorage.getItem('rohanwin_users') || '{}');
-                if(users[currentUser.mobile]) {
-                    users[currentUser.mobile].balance = userBalance;
-                    localStorage.setItem('rohanwin_users', JSON.stringify(users));
-                }
-            }
-        }
-
-        function updateBalanceUI() {
-            document.getElementById('wallet-balance').innerText = userBalance.toFixed(2);
-            const mainDisplay = document.getElementById('wallet-main-display');
-            if(mainDisplay) mainDisplay.innerText = "₹" + userBalance.toFixed(2);
-            saveCurrentBalanceState();
-        }
-
-        // ==========================================
-        // PAYTM QR CODE GENERATOR (NO PHONE NUMBERS)
-        // ==========================================
-        function generatePaytmQRCode() {
-            const upiString = "upi://pay?pa=7068172057@ptsbi&pn=Rohan%20Kumar%20Rav&cu=INR";
-            const container = document.getElementById('qrcode-container');
-            container.innerHTML = "";
-            if (typeof QRCode !== 'undefined') {
-                new QRCode(container, {
-                    text: upiString,
-                    width: 170,
-                    height: 170,
-                    colorDark: "#07090e",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-            } else {
-                container.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=${encodeURIComponent(upiString)}" alt="Paytm QR Code" class="w-40 h-40 rounded">`;
-            }
-        }
-
-        // ==========================================
-        // AVIATOR PLANE GAME
-        // ==========================================
-        function placeAviatorBet() {
-            if(aviatorFlying) return;
-            const betInput = parseFloat(document.getElementById('aviator-bet-input').value);
-            if(isNaN(betInput) || betInput <= 0 || betInput > userBalance) {
-                alert("Insufficient balance!");
-                return;
-            }
-            userBalance -= betInput;
-            aviatorBetAmount = betInput;
-            updateBalanceUI();
-
-            aviatorFlying = true;
-            aviatorCashedOut = false;
-            aviatorMultiplier = 1.00;
-            document.getElementById('aviator-msg-overlay').classList.add('hidden');
-            document.getElementById('aviator-status').innerText = "Flying Live!";
-            document.getElementById('aviator-place-btn').disabled = true;
-            document.getElementById('aviator-cashout-btn').disabled = false;
-            document.getElementById('aviator-cashout-btn').className = "bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 text-slate-950 font-black text-xs py-2.5 rounded-xl shadow cursor-pointer";
-
-            const crashPoint = userBalance <= 500 ? (2.8 + Math.random() * 4.0) : (1.05 + Math.random() * 1.3);
-
-            aviatorInterval = setInterval(() => {
-                aviatorMultiplier += 0.05;
-                document.getElementById('aviator-multiplier').innerText = aviatorMultiplier.toFixed(2) + "x";
-                
-                if(aviatorMultiplier >= crashPoint) {
-                    clearInterval(aviatorInterval);
-                    aviatorFlying = false;
-                    document.getElementById('aviator-status').innerText = "Crashed!";
-                    document.getElementById('aviator-msg-overlay').classList.remove('hidden');
-                    document.getElementById('aviator-msg-overlay').innerText = `FLEW AWAY @ ${aviatorMultiplier.toFixed(2)}x`;
-                    document.getElementById('aviator-place-btn').disabled = false;
-                    document.getElementById('aviator-cashout-btn').disabled = true;
-                    document.getElementById('aviator-cashout-btn').className = "bg-emerald-600/50 text-slate-300 font-black text-xs py-2.5 rounded-xl shadow cursor-not-allowed";
-                }
-            }, 100);
-        }
-
-        function cashoutAviator() {
-            if(!aviatorFlying || aviatorCashedOut) return;
-            clearInterval(aviatorInterval);
-            aviatorCashedOut = true;
-            aviatorFlying = false;
-            const winnings = aviatorBetAmount * aviatorMultiplier;
-            userBalance += winnings;
-            updateBalanceUI();
-
-            document.getElementById('aviator-status').innerText = `Cashed out at ${aviatorMultiplier.toFixed(2)}x!`;
-            document.getElementById('aviator-place-btn').disabled = false;
-            document.getElementById('aviator-cashout-btn').disabled = true;
-            document.getElementById('aviator-cashout-btn').className = "bg-emerald-600/50 text-slate-300 font-black text-xs py-2.5 rounded-xl shadow cursor-not-allowed";
-        }
-
-        // ==========================================
-        // MINES 5x5 GAME LOGIC
-        // ==========================================
-        function setupMinesGridUI() {
-            const gridContainer = document.getElementById('mines-grid');
-            gridContainer.innerHTML = '';
-            for(let i = 0; i < 25; i++) {
-                const btn = document.createElement('button');
-                btn.id = `mine-cell-${i}`;
-                btn.className = "mine-btn h-12 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-xl font-bold text-slate-700 shadow";
-                btn.innerText = '❓';
-                btn.onclick = () => clickMineCell(i);
-                gridContainer.appendChild(btn);
-            }
-        }
-
-        function startMinesGame() {
-            if(minesActive) return;
-            const betInput = parseFloat(document.getElementById('mines-bet-input').value);
-            if(isNaN(betInput) || betInput <= 0 || betInput > userBalance) {
-                alert("Insufficient balance!");
-                return;
-            }
-
-            userBalance -= betInput;
-            minesBetAmount = betInput;
-            updateBalanceUI();
-
-            const countSelect = parseInt(document.getElementById('mines-count-select').value);
-            minesLocations = [];
-            
-            // Rigged mine placement (Safe cells placed on user's first clicks for initial balance <= 500)
-            while(minesLocations.length < countSelect) {
-                const r = Math.floor(Math.random() * 25);
-                if(!minesLocations.includes(r)) minesLocations.push(r);
-            }
-
-            minesActive = true;
-            revealedSafeCount = 0;
-            minesMultiplier = 1.00;
-            document.getElementById('mines-mult').innerText = "1.00x";
-            document.getElementById('mines-msg').innerText = "Click cells to find gems!";
-            setupMinesGridUI();
-
-            document.getElementById('mines-start-btn').disabled = true;
-            document.getElementById('mines-cashout-btn').disabled = false;
-            document.getElementById('mines-cashout-btn').className = "bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs py-2.5 rounded-xl shadow cursor-pointer";
-        }
-
-        function clickMineCell(index) {
-            if(!minesActive) return;
-            const cell = document.getElementById(`mine-cell-${index}`);
-            if(cell.getAttribute('data-revealed') === 'true') return;
-
-            // Beginners win guarantee logic
-            if(userBalance <= 500 && minesLocations.includes(index) && revealedSafeCount < 3) {
-                const newLocation = (index + 1) % 25;
-                minesLocations = minesLocations.map(m => m === index ? newLocation : m);
-            }
-
-            if(minesLocations.includes(index)) {
-                // BOOM! Hit mine
-                cell.innerText = '💣';
-                cell.className = "mine-btn h-12 rounded-lg bg-red-600/80 border border-red-500 flex items-center justify-center text-xl shadow";
-                minesActive = false;
-                document.getElementById('mines-msg').innerText = "BOOM! You hit a mine!";
-                revealAllMines();
-                resetMinesControls();
-            } else {
-                // GEM SAFE
-                cell.setAttribute('data-revealed', 'true');
-                cell.innerText = '💎';
-                cell.className = "mine-btn h-12 rounded-lg bg-emerald-600/80 border border-emerald-400 flex items-center justify-center text-xl shadow animate-bounce";
-                revealedSafeCount++;
-                minesMultiplier += 0.35;
-                document.getElementById('mines-mult').innerText = minesMultiplier.toFixed(2) + "x";
-                document.getElementById('mines-msg').innerText = `Safe! Next Cashout: ₹${(minesBetAmount * minesMultiplier).toFixed(2)}`;
-            }
-        }
-
-        function cashoutMines() {
-            if(!minesActive || revealedSafeCount === 0) return;
-            minesActive = false;
-            const winAmt = minesBetAmount * minesMultiplier;
-            userBalance += winAmt;
-            updateBalanceUI();
-            document.getElementById('mines-msg').innerText = `Cashed out ₹${winAmt.toFixed(2)} successfully! 🎉`;
-            revealAllMines();
-            resetMinesControls();
-        }
-
-        function revealAllMines() {
-            for(let i = 0; i < 25; i++) {
-                const cell = document.getElementById(`mine-cell-${i}`);
-                if(minesLocations.includes(i)) {
-                    cell.innerText = '💣';
-                } else {
-                    cell.innerText = '💎';
-                }
-            }
-        }
-
-        function resetMinesControls() {
-            document.getElementById('mines-start-btn').disabled = false;
-            document.getElementById('mines-cashout-btn').disabled = true;
-            document.getElementById('mines-cashout-btn').className = "bg-amber-500/40 text-slate-400 font-black text-xs py-2.5 rounded-xl shadow cursor-not-allowed";
-        }
-
-        // ==========================================
-        // WIN GO 30s COLOR & NUMBER
-        // ==========================================
-        function pickWingoOption(val, type) {
-            wingoSelection = val;
-            wingoType = type;
-            document.querySelectorAll('.wingo-btn, .wingo-num-btn').forEach(b => b.classList.remove('border-amber-400', 'bg-amber-500/30'));
-            document.getElementById('wingo-status').innerText = `Selected ${type.toUpperCase()}: ${val}`;
-        }
-
-        function startWingoTimer() {
-            wingoInterval = setInterval(() => {
-                wingoTimeLeft--;
-                if(wingoTimeLeft < 10) {
-                    document.getElementById('wingo-timer').innerText = `00:0${wingoTimeLeft}`;
-                } else {
-                    document.getElementById('wingo-timer').innerText = `00:${wingoTimeLeft}`;
-                }
-
-                if(wingoTimeLeft <= 0) {
-                    resolveWingoRound();
-                    wingoTimeLeft = 25;
-                }
-            }, 1000);
-        }
-
-        function resolveWingoRound() {
-            const betInput = parseFloat(document.getElementById('wingo-bet-input').value);
-            if(wingoSelection && betInput <= userBalance && betInput > 0) {
-                userBalance -= betInput;
-                let won = false;
-                let mult = 2;
-
-                if(userBalance <= 500) {
-                    won = true;
-                    mult = wingoType === 'num' ? 9 : (wingoSelection === 'Violet' ? 4.5 : 2);
-                }
-
-                if(won) {
-                    const winAmt = betInput * mult;
-                    userBalance += winAmt;
-                    document.getElementById('wingo-status').innerText = `Period Won! Result matched ${wingoSelection} (₹${winAmt.toFixed(2)})! 🎉`;
-                } else {
-                    document.getElementById('wingo-status').innerText = "Result didn't match. Better luck next period!";
-                }
-                updateBalanceUI();
-            }
-        }
-
-        // ==========================================
-        // DRAGON VS TIGER LOGIC
-        // ==========================================
-        function pickDvt(opt) {
-            dvtSelection = opt;
-            document.querySelectorAll('.dvt-opt-btn').forEach(b => b.classList.remove('border-white'));
-            document.getElementById('dvt-btn-' + opt).classList.add('border-white');
-            document.getElementById('dvt-msg').innerText = `Betting on ${opt}`;
-        }
-
-        function playDvt() {
-            if(!dvtSelection) {
-                alert("Please select Dragon, Tiger, or Tie!");
-                return;
-            }
-            const betInput = parseFloat(document.getElementById('dvt-bet-input').value);
-            if(isNaN(betInput) || betInput <= 0 || betInput > userBalance) {
-                alert("Insufficient balance!");
-                return;
-            }
-
-            userBalance -= betInput;
-            const cards = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-            let dVal = Math.floor(Math.random() * 13);
-            let tVal = Math.floor(Math.random() * 13);
-
-            if(userBalance <= 500) {
-                if(dvtSelection === 'DRAGON') { dVal = 12; tVal = 2; }
-                if(dvtSelection === 'TIGER') { tVal = 12; dVal = 2; }
-                if(dvtSelection === 'TIE') { dVal = 8; tVal = 8; }
-            }
-
-            document.getElementById('dvt-card-dragon').innerText = cards[dVal];
-            document.getElementById('dvt-card-tiger').innerText = cards[tVal];
-
-            let winner = 'TIE';
-            if(dVal > tVal) winner = 'DRAGON';
-            if(tVal > dVal) winner = 'TIGER';
-
-            if(winner === dvtSelection) {
-                const mult = dvtSelection === 'TIE' ? 9 : 2;
-                const winAmt = betInput * mult;
-                userBalance += winAmt;
-                document.getElementById('dvt-msg').innerText = `${winner} WIN! You won ₹${winAmt.toFixed(2)}! 🎉`;
-            } else {
-                document.getElementById('dvt-msg').innerText = `${winner} WIN! Better luck next round.`;
-            }
-            updateBalanceUI();
-        }
-
-        // ==========================================
-        // LIMBO ROCKET LOGIC
-        // ==========================================
-        function playLimbo() {
-            const target = parseFloat(document.getElementById('limbo-target-input').value);
-            const betInput = parseFloat(document.getElementById('limbo-bet-input').value);
-
-            if(isNaN(target) || target <= 1 || isNaN(betInput) || betInput <= 0 || betInput > userBalance) {
-                alert("Invalid bet or target multiplier!");
-                return;
-            }
-
-            userBalance -= betInput;
-            const generatedMult = userBalance <= 500 ? (target + Math.random() * 2) : (1.00 + Math.random() * 2);
-            document.getElementById('limbo-result-mult').innerText = generatedMult.toFixed(2) + "x";
-
-            if(generatedMult >= target) {
-                const winAmt = betInput * target;
-                userBalance += winAmt;
-                document.getElementById('limbo-msg').innerText = `Target Reached! Won ₹${winAmt.toFixed(2)}! 🎉`;
-            } else {
-                document.getElementById('limbo-msg').innerText = `Rocket Crashed at ${generatedMult.toFixed(2)}x.`;
-            }
-            updateBalanceUI();
-        }
-
-        // ==========================================
-        // DEPOSIT & VIP WITHDRAWAL SYSTEM
-        // ==========================================
-        function copyText(text, label) {
-            const tempInput = document.createElement("input");
-            tempInput.value = text;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand("copy");
-            document.body.removeChild(tempInput);
-            alert(`${label} Copied: ${text}`);
-        }
-
-        function verifyDepositUtr() {
-            const utr = document.getElementById('utr-input').value.trim();
-            if(utr.length !== 12 || isNaN(utr)) {
-                document.getElementById('deposit-msg').className = "text-xs mt-2 text-rose-400 font-bold min-h-[16px]";
-                document.getElementById('deposit-msg').innerText = "Please enter a valid 12-digit UTR/Ref Number.";
-                return;
-            }
-            document.getElementById('deposit-msg').className = "text-xs mt-2 text-emerald-400 font-bold min-h-[16px]";
-            document.getElementById('deposit-msg').innerText = "UTR submitted! Verification pending (2-5 mins).";
-            document.getElementById('utr-input').value = "";
-        }
-
-        function triggerWithdrawal() {
-            if(!vipUnlocked) {
-                document.getElementById('vip-modal').classList.remove('hidden');
-            } else {
-                alert("Withdrawal request submitted!");
-            }
-        }
-
-        function closeVipModal() {
-            document.getElementById('vip-modal').classList.add('hidden');
-        }
-
-        // ==========================================
-        // MASKED GIFT CODE MODAL HANDLERS
-        // ==========================================
-        function openGiftModal() {
-            document.getElementById('gift-modal').classList.remove('hidden');
-            document.getElementById('gift-msg').innerText = '';
-            document.getElementById('gift-code-input').value = '';
-        }
-
-        function closeGiftModal() {
-            document.getElementById('gift-modal').classList.add('hidden');
-        }
-
-        function toggleGiftVisibility() {
-            const input = document.getElementById('gift-code-input');
-            const icon = document.getElementById('gift-eye-icon');
-            if (input.type === "password") {
-                input.type = "text";
-                icon.className = "fa-solid fa-eye-slash";
-            } else {
-                input.type = "password";
-                icon.className = "fa-solid fa-eye";
-            }
-        }
-
-        function claimGiftCode() {
-            const codeInput = document.getElementById('gift-code-input').value.trim();
-            const validCodes = ['RohanWin', 'Rohanbhai', '_rohannrana_'];
-            const msgEl = document.getElementById('gift-msg');
-
-            if (!validCodes.includes(codeInput)) {
-                msgEl.className = "text-xs text-center font-bold text-rose-400";
-                msgEl.innerText = "Invalid or expired secret code!";
-                return;
-            }
-
-            const todayKey = new Date().toISOString().slice(0, 10);
-            const userMobile = currentUser ? currentUser.mobile : 'guest';
-            const claimedKey = `gift_${userMobile}_${codeInput}_${todayKey}`;
-
-            if (localStorage.getItem(claimedKey)) {
-                msgEl.className = "text-xs text-center font-bold text-rose-400";
-                msgEl.innerText = "You have already claimed this code today!";
-                return;
-            }
-
-            localStorage.setItem(claimedKey, "true");
-            userBalance += 900;
-            updateBalanceUI();
-
-            msgEl.className = "text-xs text-center font-bold text-emerald-400";
-            msgEl.innerText = "Vault Unlocked! ₹900 added to wallet! 🎉";
-            document.getElementById('gift-code-input').value = "";
-        }
-    </script>
 </body>
-                      </html>
+          </html>
