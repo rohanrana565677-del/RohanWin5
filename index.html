@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-Style Aviator Flight Animation</title>
+  <style>
+    body {
+      background-color: #0f172a;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .game-card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      width: 340px;
+      text-align: center;
+    }
+    .canvas-container {
+      position: relative;
+      width: 300px;
+      height: 200px;
+      background: #090d16;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 0 auto;
+      border: 1px solid #334155;
+    }
+    canvas {
+      display: block;
+    }
+    .multiplier-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 36px;
+      font-weight: bold;
+      color: #38bdf8;
+      text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+    }
+    .controls {
+      margin-top: 15px;
+    }
+    button {
+      background: #22c55e;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background: #16a34a;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-card">
+    <div class="canvas-container">
+      <canvas id="aviatorCanvas" width="300" height="200"></canvas>
+      <div class="multiplier-overlay" id="multiplierText">1.00x</div>
+    </div>
+    
+    <div class="controls">
+      <button id="startBtn" onclick="startFlight()">फ्लाइट शुरू करें</button>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('aviatorCanvas');
+    const ctx = canvas.getContext('2d');
+    const multiplierText = document.getElementById('multiplierText');
+    const startBtn = document.getElementById('startBtn');
+
+    let animationId;
+    let flightProgress = 0;
+    let multiplier = 1.00;
+    let isFlying = false;
+
+    function drawFlightPath(progress) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 1. बैकग्राउंड ग्रिड लाइन्स
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < canvas.width; i += 30) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, canvas.height);
+        ctx.stroke();
+      }
+
+      // 2. कर्व (Trail Line) बनाना
+      const startX = 10;
+      const startY = canvas.height - 10;
+      const endX = 10 + (canvas.width - 40) * progress;
+      const endY = (canvas.height - 10) - (canvas.height - 40) * Math.pow(progress, 0.8);
+
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.quadraticCurveTo(startX + (endX - startX) / 2, startY, endX, endY);
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      // 3. रेड एविएटर ऑब्जेक्ट (प्लेन आइकॉन)
+      ctx.beginPath();
+      ctx.arc(endX, endY, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#f87171';
+      ctx.shadowColor = '#ef4444';
+      ctx.shadowBlur = 10;
+      ctx.fill();
+      ctx.shadowBlur = 0; // रिसेट
+    }
+
+    function startFlight() {
+      if (isFlying) return;
+      isFlying = true;
+      startBtn.disabled = true;
+      flightProgress = 0;
+      multiplier = 1.00;
+
+      function animate() {
+        if (flightProgress < 1) {
+          flightProgress += 0.005; // स्पीड
+          multiplier += 0.01;
+          
+          multiplierText.innerText = multiplier.toFixed(2) + 'x';
+          drawFlightPath(flightProgress);
+
+          animationId = requestAnimationFrame(animate);
+        } else {
+          // फ्लाइट पूरी होने पर रीसेट
+          isFlying = false;
+          startBtn.disabled = false;
+          multiplierText.innerText = '1.00x';
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+
+      animate();
+    }
+  </script>
+
+</body>
+    </html>
