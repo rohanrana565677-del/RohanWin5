@@ -3,213 +3,302 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RohanWin - 10s Timer & High Multiplier Aviator</title>
+  <title>RohanWin5 - Gaming Platform</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    body {
-      background-color: #0b0e14;
-      color: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 15px;
-    }
-    .game-card {
-      background: #151c28;
-      border: 1px solid #2a364f;
-      border-radius: 16px;
-      padding: 20px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.6);
-      text-align: center;
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #2a364f;
-    }
-    .header h2 {
-      font-size: 18px;
-      color: #38bdf8;
-    }
-    .round-info {
-      font-size: 12px;
-      color: #94a3b8;
-      background: #0f172a;
-      padding: 4px 8px;
-      border-radius: 6px;
-    }
-    .timer-banner {
-      background: rgba(56, 189, 248, 0.1);
-      border: 1px solid #38bdf8;
-      color: #38bdf8;
-      padding: 8px;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 14px;
-      margin-bottom: 15px;
-    }
-    .canvas-container {
-      position: relative;
-      width: 100%;
-      height: 220px;
-      background: #090d16;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid #2a364f;
-    }
-    canvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-    .multiplier-overlay {
-      position: absolute;
-      top: 45%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 42px;
-      font-weight: 800;
-      color: #38bdf8;
-      text-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
-    }
-    .multiplier-overlay.crashed {
-      color: #ef4444;
-      text-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
-    }
-    .status-text {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 13px;
-      color: #94a3b8;
-      letter-spacing: 0.5px;
-    }
-    .history-bar {
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      margin-top: 15px;
-      padding-bottom: 5px;
-    }
-    .history-badge {
-      background: #1e293b;
-      color: #38bdf8;
-      font-size: 11px;
-      font-weight: bold;
-      padding: 4px 8px;
-      border-radius: 6px;
-      white-space: nowrap;
-    }
-    .history-badge.high {
-      color: #a855f7;
-      border: 1px solid #a855f7;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #0b0e14; color: #ffffff; padding-bottom: 70px; user-select: none; }
+    
+    /* Top Header */
+    .header { background: #151c28; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a364f; sticky: top; top: 0; z-index: 100; }
+    .logo-container { display: flex; align-items: center; gap: 8px; }
+    .logo { font-size: 20px; font-weight: 800; color: #38bdf8; letter-spacing: 0.5px; }
+    .user-info { display: flex; align-items: center; gap: 12px; }
+    .balance-badge { background: #0f172a; border: 1px solid #38bdf8; padding: 4px 10px; border-radius: 20px; font-weight: 700; color: #22c55e; font-size: 14px; }
+    .profile-btn { background: #1e293b; border: 1px solid #334155; color: #fff; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    
+    /* Main Content Containers */
+    .container { padding: 15px; max-width: 500px; margin: 0 auto; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    
+    /* Aviator Game Container */
+    .game-card { background: #151c28; border: 1px solid #2a364f; border-radius: 16px; padding: 16px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; }
+    .timer-banner { background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; color: #38bdf8; padding: 8px; border-radius: 8px; font-weight: bold; font-size: 14px; margin-bottom: 12px; }
+    .canvas-container { position: relative; width: 100%; height: 210px; background: #090d16; border-radius: 12px; overflow: hidden; border: 1px solid #2a364f; }
+    canvas { display: block; width: 100%; height: 100%; }
+    .multiplier-overlay { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); font-size: 40px; font-weight: 800; color: #38bdf8; text-shadow: 0 0 15px rgba(56, 189, 248, 0.6); }
+    .multiplier-overlay.crashed { color: #ef4444; text-shadow: 0 0 15px rgba(239, 68, 68, 0.6); }
+    .status-text { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #94a3b8; }
+    
+    /* Bet Controls */
+    .bet-panel { display: flex; gap: 10px; margin-top: 15px; }
+    .bet-input { flex: 1; background: #0f172a; border: 1px solid #334155; color: #fff; padding: 10px; border-radius: 8px; font-size: 16px; font-weight: bold; text-align: center; }
+    .btn { background: #22c55e; color: white; border: none; padding: 10px 18px; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+    .btn-danger { background: #ef4444; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* History Badges */
+    .history-bar { display: flex; gap: 6px; overflow-x: auto; margin-top: 12px; padding-bottom: 4px; }
+    .history-badge { background: #1e293b; color: #38bdf8; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 6px; white-space: nowrap; }
+    .history-badge.high { color: #a855f7; border: 1px solid #a855f7; }
+
+    /* Other Mini Games Grid */
+    .section-title { font-size: 16px; font-weight: bold; margin: 15px 0 10px 0; color: #94a3b8; }
+    .games-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .mini-game-card { background: #151c28; border: 1px solid #2a364f; border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; }
+    .mini-game-card h4 { color: #f8fafc; font-size: 14px; margin-bottom: 4px; }
+    .mini-game-card p { font-size: 11px; color: #64748b; }
+
+    /* Deposit UI */
+    .qr-box { background: #ffffff; padding: 15px; border-radius: 12px; display: inline-block; margin: 15px 0; }
+    .upi-details { background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 15px; text-align: left; font-size: 13px; }
+    .utr-input { width: 100%; background: #0f172a; border: 1px solid #334155; color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 14px; }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #151c28; border-top: 1px solid #2a364f; display: flex; justify-content: space-around; padding: 8px 0; z-index: 100; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; color: #64748b; font-size: 11px; text-decoration: none; cursor: pointer; }
+    .nav-item.active { color: #38bdf8; font-weight: bold; }
+    .nav-icon { font-size: 18px; margin-bottom: 2px; }
+
+    /* Modals */
+    .modal { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.8); z-index: 200; justify-content: center; align-items: center; padding: 20px; }
+    .modal.active { display: flex; }
+    .modal-card { background: #151c28; border: 1px solid #2a364f; border-radius: 16px; padding: 20px; width: 100%; max-width: 360px; text-align: center; }
   </style>
 </head>
 <body>
 
-  <div class="game-card">
-    <div class="header">
-      <h2>🚀 Aviator 20x</h2>
-      <div class="round-info" id="roundId">राउंड #1001</div>
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-container">
+      <div class="logo">RohanWin5</div>
+    </div>
+    <div class="user-info">
+      <div class="balance-badge" id="balanceDisplay">₹10.00</div>
+      <div class="profile-btn" onclick="switchTab('profile')">👤</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- HOME / GAMES TAB -->
+    <div id="tab-home" class="tab-content active">
+      
+      <!-- Aviator Game Card -->
+      <div class="game-card">
+        <div class="timer-banner" id="timerBanner">अगला राउंड: 10s</div>
+        
+        <div class="canvas-container">
+          <canvas id="aviatorCanvas" width="340" height="210"></canvas>
+          <div class="multiplier-overlay" id="multiplierText">1.00x</div>
+          <div class="status-text" id="statusText">वेटिंग टाइमर चल रहा है...</div>
+        </div>
+
+        <div class="history-bar" id="historyBar">
+          <span class="history-badge high">18.50x</span>
+          <span class="history-badge high">9.20x</span>
+          <span class="history-badge">2.10x</span>
+          <span class="history-badge">1.45x</span>
+        </div>
+
+        <div class="bet-panel">
+          <input type="number" id="betAmount" class="bet-input" value="10" min="10" />
+          <button id="cashoutBtn" class="btn" onclick="handleBetOrCashout()">बैट लगाएं (₹10)</button>
+        </div>
+      </div>
+
+      <!-- More Games Grid -->
+      <div class="section-title">ट्रेंडिंग गेम्स</div>
+      <div class="games-grid">
+        <div class="mini-game-card">
+          <h4>🎨 Win Go 30s</h4>
+          <p>कलर और नंबर प्रेडिक्शन</p>
+        </div>
+        <div class="mini-game-card">
+          <h4>💣 Mines 5x5</h4>
+          <p>माइंस ढूंढें और मल्टीप्लायर पाएं</p>
+        </div>
+        <div class="mini-game-card">
+          <h4>🐅 Dragon vs Tiger</h4>
+          <p>कार्ड बैटल प्रेडिक्शन</p>
+        </div>
+        <div class="mini-game-card">
+          <h4>🚀 Limbo Rocket</h4>
+          <p>टारगेट मल्टीप्लायर गेम</p>
+        </div>
+      </div>
     </div>
 
-    <div class="timer-banner" id="timerBanner">अगला राउंड: 10s</div>
+    <!-- DEPOSIT TAB -->
+    <div id="tab-deposit" class="tab-content">
+      <div class="game-card">
+        <h3>Paytm UPI डिपाजिट</h3>
+        <p style="font-size: 12px; color: #94a3b8; margin-top: 4px;">स्कैन करके भुगतान करें</p>
+        
+        <div class="qr-box">
+          <div id="qrcode"></div>
+        </div>
 
-    <div class="canvas-container">
-      <canvas id="aviatorCanvas" width="360" height="220"></canvas>
-      <div class="multiplier-overlay" id="multiplierText">1.00x</div>
-      <div class="status-text" id="statusText">वेटिंग टाइमर चल रहा है...</div>
+        <div class="upi-details">
+          <p><strong>UPI ID:</strong> 7068172057@ptsbi</p>
+          <p><strong>नाम:</strong> Rohan Kumar Rav</p>
+        </div>
+
+        <input type="text" id="utrInput" class="utr-input" placeholder="12 अंकों का UTR / Ref No. दर्ज करें" />
+        <button class="btn" style="width: 100%;" onclick="submitDeposit()">डिपाजिट सबमिट करें</button>
+      </div>
     </div>
 
-    <div class="history-bar" id="historyBar">
-      <span class="history-badge">1.45x</span>
-      <span class="history-badge high">8.20x</span>
-      <span class="history-badge high">18.50x</span>
-      <span class="history-badge">2.10x</span>
+    <!-- WITHDRAW TAB -->
+    <div id="tab-withdraw" class="tab-content">
+      <div class="game-card">
+        <h3>विथड्रॉल (Withdraw)</h3>
+        <p style="font-size: 12px; color: #94a3b8; margin-top: 4px;">अपना बैंक / UPI विवरण दर्ज करें</p>
+        <br>
+        <input type="text" class="utr-input" placeholder="UPI ID / Bank Account" />
+        <input type="number" class="utr-input" placeholder="राशि दर्ज करें (Min ₹100)" />
+        <button class="btn btn-danger" style="width: 100%;" onclick="openVipModal()">विथड्रॉ करें</button>
+      </div>
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div id="tab-profile" class="tab-content">
+      <div class="game-card">
+        <h3>यूज़र प्रोफ़ाइल</h3>
+        <p style="font-size: 13px; color: #94a3b8; margin-top: 5px;">ID: #8839201</p>
+        <p style="font-size: 15px; color: #22c55e; font-weight: bold; margin-top: 10px;">बैलेंस: <span id="profileBalance">₹10.00</span></p>
+        <br>
+        <button class="btn" style="width: 100%;" onclick="openGiftModal()">🎁 गिफ्ट कोड रिडीम करें</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIP LOCK MODAL -->
+  <div class="modal" id="vipModal">
+    <div class="modal-card">
+      <h3 style="color: #ef4444;">⚠️ VIP लेवल आवश्यक है</h3>
+      <p style="font-size: 13px; color: #94a3b8; margin: 10px 0 15px 0;">विथड्रॉल अनलॉक करने के लिए ₹100 से ₹10,000 का VIP लेवल 1 एक्टिवेट करें।</p>
+      <button class="btn" style="width: 100%;" onclick="switchTab('deposit'); closeModal('vipModal');">अभी डिपाजिट करें</button>
+    </div>
+  </div>
+
+  <!-- GIFT CODE MODAL -->
+  <div class="modal" id="giftModal">
+    <div class="modal-card">
+      <h3>🎁 सीक्रेट गिफ्ट वॉल्ट</h3>
+      <input type="password" id="giftCodeInput" class="utr-input" placeholder="गिफ्ट कोड दर्ज करें" style="margin-top: 15px;" />
+      <button class="btn" style="width: 100%;" onclick="claimGiftCode()">क्लेम करें</button>
+      <button class="btn btn-danger" style="width: 100%; margin-top: 8px;" onclick="closeModal('giftModal')">बंद करें</button>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('home')">
+      <div class="nav-icon">🎮</div>
+      <div>गेम्स</div>
+    </div>
+    <div class="nav-item" onclick="switchTab('deposit')">
+      <div class="nav-icon">💳</div>
+      <div>डिपाजिट</div>
+    </div>
+    <div class="nav-item" onclick="switchTab('withdraw')">
+      <div class="nav-icon">💸</div>
+      <div>Withdraw</div>
+    </div>
+    <div class="nav-item" onclick="switchTab('profile')">
+      <div class="nav-icon">👤</div>
+      <div>प्रोफ़ाइल</div>
     </div>
   </div>
 
   <script>
+    // State Management & Persistence
+    let balance = parseFloat(localStorage.getItem('rw_balance')) || 10.00;
+    let betPlaced = false;
+    let currentBet = 0;
+    let isFlying = false;
+    let waitTime = 10;
+    let targetMultiplier = 1.00;
+    let currentMultiplier = 1.00;
+    let flightProgress = 0;
+    let animationId;
+
     const canvas = document.getElementById('aviatorCanvas');
     const ctx = canvas.getContext('2d');
     const multiplierText = document.getElementById('multiplierText');
     const timerBanner = document.getElementById('timerBanner');
     const statusText = document.getElementById('statusText');
-    const roundIdElem = document.getElementById('roundId');
-    const historyBar = document.getElementById('historyBar');
+    const cashoutBtn = document.getElementById('cashoutBtn');
 
-    let roundNumber = 1001;
-    let waitTime = 10;
-    let isFlying = false;
-    let animationId;
-    let targetMultiplier = 1.00;
-    let currentMultiplier = 1.00;
-    let flightProgress = 0;
-
-    // 20x तक रैंडम टारगेट जनरेट करना
-    function generateTargetMultiplier() {
-      const rand = Math.random();
-      if (rand < 0.4) {
-        return (1.1 + Math.random() * 1.9).toFixed(2); // 1.1x - 3.0x
-      } else if (rand < 0.75) {
-        return (3.0 + Math.random() * 5.0).toFixed(2); // 3.0x - 8.0x
-      } else if (rand < 0.92) {
-        return (8.0 + Math.random() * 7.0).toFixed(2); // 8.0x - 15.0x
-      } else {
-        return (15.0 + Math.random() * 10.0).toFixed(2); // 15.0x - 25.0x
-      }
+    function updateBalance(amt) {
+      balance += amt;
+      localStorage.setItem('rw_balance', balance.toFixed(2));
+      document.getElementById('balanceDisplay').innerText = `₹${balance.toFixed(2)}`;
+      document.getElementById('profileBalance').innerText = `₹${balance.toFixed(2)}`;
     }
 
+    // QR Code Generation
+    new QRCode(document.getElementById("qrcode"), {
+      text: "upi://pay?pa=7068172057@ptsbi&pn=Rohan%20Kumar%20Rav&cu=INR",
+      width: 140,
+      height: 140
+    });
+
+    // Tab Navigation
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      const idx = ['home', 'deposit', 'withdraw', 'profile'].indexOf(tabId);
+      if(idx !== -1) document.querySelectorAll('.nav-item')[idx].classList.add('active');
+    }
+
+    // Modal Control
+    function openVipModal() { document.getElementById('vipModal').classList.add('active'); }
+    function openGiftModal() { document.getElementById('giftModal').classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    // Multiplier Generator (1.00x - 20.00x+)
+    function generateTargetMultiplier() {
+      const rand = Math.random();
+      if (rand < 0.35) return (1.1 + Math.random() * 1.9).toFixed(2);
+      if (rand < 0.70) return (3.0 + Math.random() * 5.0).toFixed(2);
+      if (rand < 0.90) return (8.0 + Math.random() * 7.0).toFixed(2);
+      return (15.0 + Math.random() * 10.0).toFixed(2);
+    }
+
+    // Aviator Engine
     function drawScene(progress, crashed = false) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // 1. बैकग्राउंड ग्रिड
+      
+      // Grid Lines
       ctx.strokeStyle = '#1e293b';
       ctx.lineWidth = 1;
       for (let i = 0; i < canvas.width; i += 40) {
-        ctx.beginPath();
-        ctx.moveTo(i, 0);
-        ctx.lineTo(i, canvas.height);
-        ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
       }
 
       if (progress <= 0) return;
 
-      // 2. कर्व लाइन (Trail)
-      const startX = 20;
-      const startY = canvas.height - 20;
+      const startX = 20, startY = canvas.height - 20;
       const endX = 20 + (canvas.width - 50) * Math.min(progress, 1);
       const endY = (canvas.height - 20) - (canvas.height - 50) * Math.pow(Math.min(progress, 1), 0.75);
 
       ctx.beginPath();
       ctx.moveTo(startX, startY);
       ctx.quadraticCurveTo(startX + (endX - startX) / 2, startY, endX, endY);
-      ctx.strokeStyle = crashed ? '#ef4444' : '#ef4444';
+      ctx.strokeStyle = '#ef4444';
       ctx.lineWidth = 4;
       ctx.stroke();
 
-      // 3. प्लेन डॉट / ऑब्जेक्ट
       if (!crashed) {
         ctx.beginPath();
-        ctx.arc(endX, endY, 7, 0, Math.PI * 2);
+        ctx.arc(endX, endY, 6, 0, Math.PI * 2);
         ctx.fillStyle = '#f87171';
-        ctx.shadowColor = '#ef4444';
-        ctx.shadowBlur = 12;
-        ctx.fill();
-        ctx.shadowBlur = 0;
+        ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 10;
+        ctx.fill(); ctx.shadowBlur = 0;
       }
     }
 
@@ -223,41 +312,44 @@
       timerBanner.innerText = "🚀 फ्लाइट चालू है...";
       statusText.innerText = "टेक-ऑफ हो चुका है!";
 
+      if (betPlaced) {
+        cashoutBtn.innerText = "Cash Out (1.00x)";
+        cashoutBtn.className = "btn btn-danger";
+      }
+
       function animate() {
         if (currentMultiplier < targetMultiplier) {
-          // मल्टीप्लायर की स्पीड बढ़ाना
-          let speed = 0.01 + (currentMultiplier * 0.005);
-          currentMultiplier += speed;
-          flightProgress += 0.004;
+          currentMultiplier += 0.01 + (currentMultiplier * 0.004);
+          flightProgress += 0.0035;
 
           multiplierText.innerText = currentMultiplier.toFixed(2) + 'x';
+          if (betPlaced) cashoutBtn.innerText = `Cash Out (₹${(currentBet * currentMultiplier).toFixed(2)})`;
+          
           drawScene(flightProgress);
-
           animationId = requestAnimationFrame(animate);
         } else {
-          // क्रैश होना
+          // Crash Event
           multiplierText.innerText = targetMultiplier.toFixed(2) + 'x CRASH!';
           multiplierText.classList.add('crashed');
           statusText.innerText = "फ्लाइट क्रैश हो गई!";
           drawScene(flightProgress, true);
-          
-          addHistoryBadge(targetMultiplier.toFixed(2) + 'x');
-          
-          // क्रैश होने के बाद 10s वेटिंग टाइमर दोबारा शुरू करना
-          setTimeout(() => {
-            startWaitingTimer();
-          }, 1500);
+
+          if (betPlaced) {
+            betPlaced = false;
+            cashoutBtn.innerText = "बैट लगाएं (₹10)";
+            cashoutBtn.className = "btn";
+            cashoutBtn.disabled = false;
+          }
+
+          setTimeout(startWaitingTimer, 1500);
         }
       }
-
       animate();
     }
 
     function startWaitingTimer() {
       isFlying = false;
       waitTime = 10;
-      roundNumber++;
-      roundIdElem.innerText = `राउंड #${roundNumber}`;
       multiplierText.innerText = "1.00x";
       multiplierText.classList.remove('crashed');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -265,7 +357,6 @@
       const interval = setInterval(() => {
         timerBanner.innerText = `अगला राउंड: ${waitTime}s`;
         statusText.innerText = "वेटिंग टाइमर चल रहा है...";
-        
         if (waitTime <= 0) {
           clearInterval(interval);
           startFlight();
@@ -274,21 +365,63 @@
       }, 1000);
     }
 
-    function addHistoryBadge(val) {
-      const num = parseFloat(val);
-      const badge = document.createElement('span');
-      badge.className = `history-badge ${num >= 5 ? 'high' : ''}`;
-      badge.innerText = val;
-      historyBar.insertBefore(badge, historyBar.firstChild);
-      
-      if (historyBar.children.length > 6) {
-        historyBar.removeChild(historyBar.lastChild);
+    function handleBetOrCashout() {
+      if (!isFlying && !betPlaced) {
+        const amt = parseFloat(document.getElementById('betAmount').value);
+        if (balance >= amt) {
+          updateBalance(-amt);
+          currentBet = amt;
+          betPlaced = true;
+          cashoutBtn.innerText = "वेटिंग...";
+          cashoutBtn.disabled = true;
+        } else {
+          alert("पर्याप्त बैलेंस नहीं है!");
+        }
+      } else if (isFlying && betPlaced) {
+        const winAmt = currentBet * currentMultiplier;
+        updateBalance(winAmt);
+        betPlaced = false;
+        cashoutBtn.innerText = "कैशआउट सफल!";
+        cashoutBtn.className = "btn";
+        cashoutBtn.disabled = true;
       }
     }
 
-    // पहला राउंड शुरू करें
+    // Gift Codes Redemption
+    function claimGiftCode() {
+      const code = document.getElementById('giftCodeInput').value.trim();
+      const validCodes = ['RohanWin', 'Rohanbhai', '_rohannrana_'];
+      const today = new Date().toDateString();
+      const lastClaim = localStorage.getItem('rw_last_claim');
+
+      if (lastClaim === today) {
+        alert("आप आज का गिफ्ट कोड पहले ही क्लेम कर चुके हैं!");
+        return;
+      }
+
+      if (validCodes.includes(code)) {
+        updateBalance(900);
+        localStorage.setItem('rw_last_claim', today);
+        alert("बधाई हो! आपको ₹900 का बोनस मिला है।");
+        closeModal('giftModal');
+      } else {
+        alert("अमान्य गिफ्ट कोड!");
+      }
+    }
+
+    function submitDeposit() {
+      const utr = document.getElementById('utrInput').value;
+      if (utr.length >= 12) {
+        alert("डिपाजिट रिक्वेस्ट सबमिट हो गई है। वेरिफिकेशन के बाद बैलेंस अपडेट हो जाएगा।");
+        document.getElementById('utrInput').value = '';
+      } else {
+        alert("कृपया सही 12 अंकों का UTR नंबर दर्ज करें।");
+      }
+    }
+
+    // Start Platform
+    updateBalance(0);
     startWaitingTimer();
   </script>
-
 </body>
-          </html>
+</html>
